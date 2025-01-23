@@ -97,6 +97,15 @@
     В математике любой объект можно представить как некоторое множество, однако это не лишает теорию типов приложимости. Нам важно, что натуральное число --- это не просто множество, а что-то новое, обладающие свойствами «числа».
 \end{note}
 
+\begin{eg}
+Можно представить следующий пример вычислений с типами 
+\begin{prooftree}
+\AxiomC{\(m, n: \N \vdash 2 \cdot m + n : \N\)}
+\AxiomC{\(\vdash 2 : \N\)}
+\BinaryInfC{\(\vdash 2 \cdot 5 + 3 : \N\)}
+\end{prooftree}
+\end{eg}
+
 \section{Простая теория типов}
 
 Введем нашу первую модель теории типов формально. 
@@ -117,21 +126,21 @@
             \UnaryInfC{\(x_1 : A_1, \dots, x_n : A_n \vdash x_i : A_i\)}
         \end{prooftree}
 
-    \item Подстановка
+    \item Подстановка (Substitution)
         \begin{prooftree}
             \AxiomC{\(\Delta \vdash s_i : A_i \quad \Gamma \vdash t : C\)}
             \UnaryInfC{\(\Delta \vdash t[s_i / x_i] : C\)}
         \end{prooftree}
 \end{itemize}
 
-Аксиому подстановки можно ослабить следующими способами:
+Аксиому подстановки можно вывести из следующих аксиом:
 \begin{itemize}
-    \itemОслабление:
+    \itemОслабление (weakening):
     \begin{prooftree}
         \AxiomC{\(\Gamma \vdash t : A\)}
         \UnaryInfC{\(\Gamma, x : B \vdash t : A\)}
     \end{prooftree}
-    \itemЗамена:
+    \itemЗамена (exchange):
     \begin{prooftree}
         \AxiomC{\(\Delta \vdash s_i : A_i \quad \Gamma \vdash t : C\)}
         \UnaryInfC{\(\Gamma, x : A, y : B \quad \Delta \vdash t : C\)}
@@ -143,8 +152,6 @@
         \BinaryInfC{\(\Gamma \vdash t [a/x] : B\)}
     \end{prooftree}
 \end{itemize}
-
-В некоторых версиях системы типов мы можем использовать один из этих вариантов.
 
 \begin{eg}
     Пример работы аксиомы подстановки
@@ -221,12 +228,12 @@
 
 \subsubsection{Упрощение выражений}
 
-Мы уже ввели теорию тяипов. Для нее не обязательны аксиомы для упрощения выражений, но давайте их введем для удобства.
+Мы уже ввели теорию типов. Для нее не обязательны аксиомы для упрощения выражений, но давайте их введем для удобства.
 
 \begin{prooftree}
     \AxiomC{\(\Gamma \vdash t_1 : A_1, \Gamma \vdash t_2 : A_2\)}
     \UnaryInfC{\(\Gamma \vdash p_i \langle t_1,\, t_2 \rangle \rightsquigarrow t_i : A_i\)}
-\end{prooftree} 
+\end{prooftree}
 
 \begin{prooftree}
     \AxiomC{\(\Gamma \vdash t_0 : C\)}
