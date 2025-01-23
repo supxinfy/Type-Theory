@@ -1,0 +1,239 @@
+\documentclass[openany]{book}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1, T2A]{fontenc}
+\usepackage[greek.polytonic, russian]{babel}
+
+\usepackage[a4paper, total={6in, 9in}]{geometry}
+
+\usepackage{amssymb, amsthm, amsmath, amsfonts, bbm, float, listings}
+\usepackage[dvipsnames]{xcolor}
+
+\usepackage{bbm}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks = true,
+    pdftitle={Теория типов},
+    pdfsubject={Теория типов},
+    pdfauthor={supxinfy},
+    pdfkeywords={ 
+        Теория типов
+    },
+    citecolor=ForestGreen,
+}
+\usepackage{graphicx}
+\usepackage{nicefrac}
+\usepackage{microtype}
+\usepackage{cleveref}
+\usepackage{url}
+\usepackage{tikz}
+
+\usetikzlibrary{positioning, shapes.geometric}
+\usetikzlibrary{graphs} 
+
+\tikzset{fontscale/.style = {font=\relsize{#1}}
+}
+
+\usepackage{alphalph}
+\usepackage{mathrsfs} 
+\usepackage{upgreek} 
+\usepackage{bussproofs}
+
+\theoremstyle{plain}
+\newtheorem{thm}{Теорема}[section]
+\newtheorem{lem}[thm]{Лемма}
+\newtheorem{prop}[thm]{Предложение}
+\newtheorem{cor}{Следствие}	
+\newtheorem{note}{Замечание}[section]
+
+\theoremstyle{definition}
+\newtheorem{defn}{Определение}[section]
+\newtheorem{xrc}{Упражнение}[]
+\newtheorem{eg}{Пример}[]
+
+\newenvironment{sol}
+{\begin{proof}[Решение]}
+{\end{proof}}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\rec}{\mathrm{rec}}
+\newcommand{\nat}{\mathsf{Nat}}
+
+\date{\today}
+\author{Шубин Владислав}
+\title{Теория типов: Конспект}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\chapter{Введение}
+Теория типов представляет собой новое направление в логике, изучающее системы типов. С математической точки зрения существует два пути происхождения теории типов. Первый из них есть анализ математического текста, например из книги Шафаревича \cite{Shaph} мы видим следующее «для \(y \in Y\) и \(x \in f^{-1}(y)\) мы получаем уравнение \[t_i(x)^k + a_1(y)t_i(x)^{k-1}+\dots+a_k(y) = 0.\text{»}\]В этом контексте мы хотим анализировать подобные высказывания, которые понимаются, обычно, интуитивно. Например, здесь бессмысленно было бы сказать \(x \in \mathbb{k}\), по причине того, что \(x\) --- это точка аффинной схемы, но не элемент поля. В этом смысле они обладают разными «типами». Человек, знакомый с алгебраической геометрией, понимает, что \(k \in \N\), \(t_i : X \to \mathbb{k}\), \(a_i : Y \to \mathbb{k}\), где \(\mathbb{k}\) есть поле.
+
+Подобные выражения недоступны в языке логики первого порядка и для того, чтобы оперировать с такой «математической грамматикой» нам понадобится теория типов
+
+В теории типов мы, подобно символу \(\in\), используем символ \(:\), означающий «иметь тип». Например, \(x : A\) означает «\(x\) имеет тип \(A\)». Пусть у нас есть несколько типов \(x : A, y : B\), которые мы отделяем запятой. Если из них возможен вывод, мы его будем называть суждением, а посылку контекстом. То есть \[\underbrace{x : A, y : B}_{\text{контекст}} \vdash \underbrace{t : C}_{\text{суждение}}.\]
+
+Кроме чисто математической точки зрения мы имеем довольно важную практическую сторону этой теории --- это языки программирования. С точки зрения компьютера (если у него, конечно, может быть какая-либо точка зрения) любые данные представляют из себя кусок бинарного кода. Картинки, программы, музыка --- все это есть лишь последовательность нулей и единиц. Поэтому в ранних языках программирования существовала проблема типизации. Для примера возьмем Си:
+\begin{lstlisting}[language=C]
+    void rev(char *str, int len){
+        int start = 0;
+        int end = len - 1;
+        while(start < end) {
+            char tmp = str[start];
+            str[start] = str[end];
+            str[end] = tmp;
+            end--;
+            start++;
+        }
+    }
+\end{lstlisting}
+Современный язык Си используем систему типов, в которой тип \texttt{char} представляет символьный тип. Однако, нет никакой существенной разницы между типами \texttt{char} и \texttt{short}, например (второй тип представляет однобайтовое число). Поэтому эту функцию можно применить и к массиву чисел, что создает существенные проблемы при разработке сложного ПО.
+
+Из-за этой проблемы сформировалось, своего рода, ad hoc решение, называемое строгой типизацией. 
+
+\begin{note}
+    В математике любой объект можно представить как некоторое множество, однако это не лишает теорию типов приложимости. Нам важно, что натуральное число --- это не просто множество, а что-то новое, обладающие свойствами «числа».
+\end{note}
+
+\section{Простая теория типов}
+
+Введем нашу первую модель теории типов формально. 
+Типы мы определим как \[A := 1 \, | \, A_1 \times A_2 \, | \, \nat\], то есть свободно порожденное множество с элементами \(1 \in \mathsf{Ty}\), \(\nat \in \mathsf{Ty}\), \(\times: \mathsf{Ty}^2 \to \mathsf{Ty}\). Под \(1\) мы имеем ввиду унарный тип. И, как и во всякой теории, нам понадобятся термы \[t := x \, | \, \langle \rangle \, | \, \langle t_1, t_2 \rangle \, | \, p_1(t) \, | \, p_2(t) \, | \, 0 \, | \, S(t) \, | \, \rec(...),\] где \(\rec\) --- рекурсия, чьи аргументы мы уточним позже.
+
+Далее нам понадобится контекст, определяемый как \(\Gamma := \langle \rangle \, | \, \Gamma, x : A\), то есть контексты суть конечные списки переменных с типами (например, \(x_1 : A_1, \dots, x_n : A_n\)).
+
+Теперь займемся суждением о типе --- отношении \(\Gamma \vdash t : A\) или «в контексте \(\Gamma\) переменная \(t\) имеет тип \(A\)» что аналогично «выводимости» в логике первого порядка.
+
+\subsection{Аксиомы}
+Первая часть правил будет относиться к так называемым структурным правилам. Под \(i\) мы будем иметь ввиду любой тип в контексте.
+
+Перечислим их:
+\begin{itemize}
+    \item (Axiom, Identity, Assumption)
+        \begin{prooftree}
+            \AxiomC{}
+            \UnaryInfC{\(x_1 : A_1, \dots, x_n : A_n \vdash x_i : A_i\)}
+        \end{prooftree}
+
+    \item Подстановка
+        \begin{prooftree}
+            \AxiomC{\(\Delta \vdash s_i : A_i \quad \Gamma \vdash t : C\)}
+            \UnaryInfC{\(\Delta \vdash t[s_i / x_i] : C\)}
+        \end{prooftree}
+\end{itemize}
+
+Аксиому подстановки можно ослабить следующими способами:
+\begin{itemize}
+    \itemОслабление:
+    \begin{prooftree}
+        \AxiomC{\(\Gamma \vdash t : A\)}
+        \UnaryInfC{\(\Gamma, x : B \vdash t : A\)}
+    \end{prooftree}
+    \itemЗамена:
+    \begin{prooftree}
+        \AxiomC{\(\Delta \vdash s_i : A_i \quad \Gamma \vdash t : C\)}
+        \UnaryInfC{\(\Gamma, x : A, y : B \quad \Delta \vdash t : C\)}
+    \end{prooftree}
+    \itemЗамена одной переменной:
+    \begin{prooftree}
+        \AxiomC{\(\Gamma, x : A \vdash t : B\)}
+        \AxiomC{\(\Gamma \vdash a : A\)}
+        \BinaryInfC{\(\Gamma \vdash t [a/x] : B\)}
+    \end{prooftree}
+\end{itemize}
+
+В некоторых версиях системы типов мы можем использовать один из этих вариантов.
+
+\begin{eg}
+    Пример работы аксиомы подстановки
+    \begin{prooftree}
+        \AxiomC{\(y : \N \vdash y \cdot y : \N \quad x_1, x_2 : \N \vdash x_1 + x_2 : \N\)}
+        \UnaryInfC{\(x_1, x_2 : \N \vdash x_1 \cdot x_1 + x_2 \cdot x_2 : \N\)}
+    \end{prooftree}
+\end{eg}
+
+Наша система все еще не является теорией типов, поскольку у нас нет правил вывода типов. Давайте их введем:
+\begin{itemize}
+    \itemПроизведение
+    \begin{prooftree}
+        \AxiomC{\(\Gamma \vdash t_1 : A_1, \Gamma \vdash t_2 : A_2\)}
+        \UnaryInfC{\(\Gamma \vdash \langle t_1, t_2\rangle : A_1 \times A_2\)}
+    \end{prooftree}
+    \itemПроекция
+    \begin{prooftree}
+        \AxiomC{\(\Gamma \vdash t : A_1 \times A_2\)}
+        \UnaryInfC{\(\Gamma \vdash p_i(t) : A_i\)}
+    \end{prooftree}
+    \item\(0\)
+        \begin{prooftree}
+            \AxiomC{\(\)}
+            \UnaryInfC{\(\Gamma \vdash 0 : \nat\)}
+        \end{prooftree}
+    \item\(S(n)\)
+        \begin{prooftree}
+            \AxiomC{\(\Gamma \vdash n : \nat\)}
+            \UnaryInfC{\(\Gamma \vdash S(n) : \nat\)}
+        \end{prooftree}
+    \item\(1\)
+        \begin{prooftree}
+            \AxiomC{\(\)}
+            \UnaryInfC{\(\Gamma \vdash \langle \rangle : 1\)}
+        \end{prooftree}
+    \item\(\rec\)
+        \begin{prooftree}
+            \AxiomC{\(\Gamma \vdash n : \nat\)}
+            \AxiomC{\(\Gamma \vdash t_0 : C\)}
+            \AxiomC{\(\Gamma, x : \nat, y : C \vdash t_s (x, y) : C\)}
+            \TrinaryInfC{\(\Gamma \vdash \rec(t_0; (x, y, t_s); n) : C\)}
+        \end{prooftree}
+\end{itemize}
+
+Теперь мы ввели все, что нужно для теории типов. Однако, стоит учитывать один нюанс.
+
+\subsubsection{Аннотации}
+
+Давайте посмотрим внимательно на аксиому проекции
+\begin{prooftree}
+    \AxiomC{\(\Gamma \vdash t : A_1 \times A_2\)}
+    \UnaryInfC{\(\Gamma \vdash p_i(t) : A_i\)}
+\end{prooftree}
+Из этой аксиомы нельзя точно понять, на каком типе определена функция \(p_i\), но мы видим этот тип из контекста. В теории типов существует аннотирование, которое приписывает на каком типе определена функция. С ней наша аксиома должна выглядеть как 
+\begin{prooftree}
+    \AxiomC{\(\Gamma \vdash t : A_1 \times A_2\)}
+    \UnaryInfC{\(\Gamma \vdash p^{A_1, A_2}_i(t) : A_i\)}
+\end{prooftree}
+Аннотация присутствует всегда, но для читаемости ее не выписывают. 
+
+\subsubsection{Упрощение выражений}
+
+Мы уже ввели теорию типов. Для нее не обязательны аксиомы для упрощения выражений, но давайте их введем для удобства
+
+\begin{thebibliography}{2}
+
+    \bibitem{Shaph}
+    Шафаревич И.Р.
+    \newblock {\em Основы алгебраической геометрии.}
+    \newblock УМН, 24:6(150) (1969), 3–184; Russian Math. Surveys, 24:6 (1969), 1–178.
+
+    \bibitem{Harper}
+    Robert Harper.
+    \newblock {\em Type Systems for Programming Languages.}
+    \newblock School of Computer Science, Carnegie Mellon University, Spring, 2000,
+    \newblock url: \url{https://people.mpi-sws.org/~dreyer/ats/papers/harper-tspl.pdf}
+
+    \bibitem{Lof}
+    Per Martin-L\"{o}f.
+    \newblock {\em Intuitionistic Type Theory.}
+    \newblock Bibliopolis.
+    \newblock url: \url{https://archive-pml.github.io/martin-lof/pdfs/Bibliopolis-Book-retypeset-1984.pdf}
+
+    \bibitem{Smith}
+    Bengt Nordstr\"{o}m, Kent Petersson, Jan M. Smith.
+    \newblock {\em Programming in Martin-L\"{o}f's Type Theory.}
+    \newblock Department of Computing Sciences, University of G\"{o}teborg, Sweden.
+
+\end{thebibliography}
+
+\end{document}
