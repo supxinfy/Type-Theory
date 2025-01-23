@@ -190,6 +190,8 @@
         \end{prooftree}
 \end{itemize}
 
+Чтобы определить рекурсию на \(n \in \N\) нам нужна база \(n = 0\) и индуктивный переход \(n = S(m)\).
+
 Теперь мы ввели все, что нужно для теории типов. Однако, стоит учитывать один нюанс.
 
 \subsubsection{Аннотации}
@@ -202,13 +204,42 @@
 Из этой аксиомы нельзя точно понять, на каком типе определена функция \(p_i\), но мы видим этот тип из контекста. В теории типов существует аннотирование, которое приписывает на каком типе определена функция. С ней наша аксиома должна выглядеть как 
 \begin{prooftree}
     \AxiomC{\(\Gamma \vdash t : A_1 \times A_2\)}
-    \UnaryInfC{\(\Gamma \vdash p^{A_1, A_2}_i(t) : A_i\)}
+    \UnaryInfC{\(\Gamma \vdash p^{A_1, \, A_2}_i(t) : A_i\)}
 \end{prooftree}
-Аннотация присутствует всегда, но для читаемости ее не выписывают. 
+Аннотация присутствует всегда, но для читаемости ее не выписывают. Нам также необходимо аннотировать аксиомы пары, поскольку функция пары для каждого типа своя:
+\begin{prooftree}
+    \AxiomC{\(\Gamma \vdash t_1 : A_1, \Gamma \vdash t_2 : A_2\)}
+    \UnaryInfC{\(\Gamma \vdash \langle t_1, t_2\rangle^{A_1, \, A_2} : A_1 \times A_2\)}
+\end{prooftree}
+Для рекурсии нужно аннотировать саму функцию \(\rec\):   
+\begin{prooftree}
+    \AxiomC{\(\Gamma \vdash n : \nat\)}
+    \AxiomC{\(\Gamma \vdash t_0 : C\)}
+    \AxiomC{\(\Gamma, x : \nat, y : C \vdash t_s (x, y) : C\)}
+    \TrinaryInfC{\(\Gamma \vdash \rec^C(t_0; (x, y, t_s); n) : C\)}
+\end{prooftree} 
 
 \subsubsection{Упрощение выражений}
 
-Мы уже ввели теорию типов. Для нее не обязательны аксиомы для упрощения выражений, но давайте их введем для удобства
+Мы уже ввели теорию тяипов. Для нее не обязательны аксиомы для упрощения выражений, но давайте их введем для удобства.
+
+\begin{prooftree}
+    \AxiomC{\(\Gamma \vdash t_1 : A_1, \Gamma \vdash t_2 : A_2\)}
+    \UnaryInfC{\(\Gamma \vdash p_i \langle t_1,\, t_2 \rangle \rightsquigarrow t_i : A_i\)}
+\end{prooftree} 
+
+\begin{prooftree}
+    \AxiomC{\(\Gamma \vdash t_0 : C\)}
+    \AxiomC{\(\Gamma, x : \nat, y : C \vdash t_s (x, y) : C\)}
+    \BinaryInfC{\(\Gamma \vdash \rec^C(t_0; (x, y, t_s); 0) : C \rightsquigarrow t_0 : C\)}
+\end{prooftree} 
+
+\begin{prooftree}
+    \AxiomC{\(\Gamma \vdash m : \nat\)}
+    \AxiomC{\(\Gamma \vdash t_0 : C\)}
+    \AxiomC{\(\Gamma, x : \nat, y : C \vdash t_s (x, y) : C\)}
+    \TrinaryInfC{\(\Gamma \vdash \rec^C(t_0; (x, y, t_s); S(m)) \rightsquigarrow t_s [m/x, \rec^C(t_0; (x, y, t_s); m)/y] : C\)}
+\end{prooftree} 
 
 \begin{thebibliography}{2}
 
@@ -233,6 +264,12 @@
     Bengt Nordstr\"{o}m, Kent Petersson, Jan M. Smith.
     \newblock {\em Programming in Martin-L\"{o}f's Type Theory.}
     \newblock Department of Computing Sciences, University of G\"{o}teborg, Sweden.
+
+    \bibitem{}
+    Аксель П. и др.
+    \newblock {\em Гомотопическая теория типов.}
+    \newblock Программа Унивалентных Оснований, Иститут Перспективных Исследований, пер.: Геннадий Чернышев,
+    \newblock url: \url{https://henrychern.wordpress.com/wp-content/uploads/2022/10/hott2.pdf}
 
 \end{thebibliography}
 
