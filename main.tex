@@ -274,6 +274,23 @@
     \item \(\llbracket \N \rrbracket := \N\)
 \end{itemize}
 
+Для контекста \(\Gamma = (x_1 : A_1, \dots, x_n : A_n)\) мы определяем множество \(\llbracket \Gamma \rrbracket := \prod_i \llbracket A_i \rrbracket\). Далее нам требуется рекурсивно определить правила типизации. Это можно сделать двумя способами. 
+
+Мы для любого контекста \(\Gamma\) и типа \(A\) мы определим функцию \(\llbracket \Gamma \rrbracket \underset{\llbracket \Gamma \vdash t : A \rrbracket}{\to} \llbracket A \rrbracket\). Она будет правильно определена тогда и только тогда, когда соблюдены правила типизации. Иначе мы получим \(\mathrm{undefined}\). Итак, будем действовать рекурсивно по терму \(t\):
+\begin{itemize}
+    \item \(\llbracket \Gamma \rrbracket \overset{\llbracket \Gamma \vdash x : A \rrbracket}{\longrightarrow} \llbracket A \rrbracket := \begin{cases}\llbracket \Gamma \rrbracket \overset{\pi_x}{\longrightarrow} \llbracket A \rrbracket & \text{если }(x:A) \in \Gamma,\\ \text{undefined} & \text{иначе}\end{cases}.\)
+
+    \item \(\llbracket \Gamma \rrbracket \overset{\llbracket \Gamma \vdash \langle \rangle : A \rrbracket}{\longrightarrow} \llbracket A \rrbracket := \begin{cases}\llbracket \Gamma \rrbracket \overset{}{\longrightarrow} \llbracket A \rrbracket = 1 & \text{если }A=1,\\ \text{undefined} & \text{иначе}\end{cases}.\)
+
+    \item \(\llbracket \Gamma \rrbracket \overset{\llbracket \Gamma \vdash \langle a, b \rangle^{B_1 \times B_2} : A \rrbracket}{\longrightarrow} \llbracket A \rrbracket := \begin{cases}\llbracket \Gamma \rrbracket \overset{\langle \llbracket \Gamma \vdash b_1 : B_1 \rrbracket, \llbracket \Gamma \vdash b_2 : B_2 \rrbracket \rangle}{\longrightarrow} \llbracket A \rrbracket = \llbracket B_1 \rrbracket \times \llbracket B_2 \rrbracket & \text{если }A=B_1 \times B_2,\\ \text{undefined} & \text{иначе}\end{cases}.\)
+
+    \item \(\llbracket \Gamma \rrbracket \overset{\llbracket \Gamma \vdash \pi_i^{B_1, B_2} p : A \rrbracket}{\longrightarrow} \llbracket A \rrbracket := \begin{cases}\llbracket \Gamma \rrbracket \overset{\pi_i \llbracket \Gamma \vdash p : B_1 \times B_2 \rrbracket}{\longrightarrow} \llbracket A \rrbracket & \text{если }A = B_1 \times B_2 \in \Gamma,\\ \text{undefined} & \text{иначе}\end{cases}.\)
+
+    \item \(\llbracket \Gamma \rrbracket \overset{\llbracket \Gamma \vdash 0 : A \rrbracket}{\longrightarrow} \llbracket A \rrbracket := \begin{cases}\llbracket \Gamma \rrbracket \overset{0}{\longrightarrow} \llbracket \N \rrbracket & \text{если }A=\N \in \Gamma,\\ \text{undefined} & \text{иначе}\end{cases}.\)
+
+    \item \(\llbracket \Gamma \rrbracket \overset{\llbracket \Gamma \vdash S_n : A \rrbracket}{\longrightarrow} \llbracket A \rrbracket := \begin{cases}\llbracket \Gamma \rrbracket \overset{\llbracket \Gamma \vdash n : \N \rrbracket}{\longrightarrow} (\N \to \N) & \text{если }A = \N,\\ \text{undefined} & \text{иначе}\end{cases}.\)
+\end{itemize}
+
 \begin{thebibliography}{2}
 
     \bibitem{Shaph}
