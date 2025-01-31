@@ -6,7 +6,7 @@
 
 \usepackage[a4paper, total={6in, 9in}]{geometry}
 
-\usepackage{amssymb, amsthm, amsmath, amsfonts, bbm, float, listings}
+\usepackage{amssymb, amsthm, amsmath, amsfonts, bbm, float, listings, stmaryrd}
 \usepackage[dvipsnames]{xcolor}
 
 \usepackage{bbm}
@@ -98,12 +98,12 @@
 \end{note}
 
 \begin{eg}
-Можно представить следующий пример вычислений с типами 
-\begin{prooftree}
-\AxiomC{\(m, n: \N \vdash 2 \cdot m + n : \N\)}
-\AxiomC{\(\vdash 2 : \N\)}
-\BinaryInfC{\(\vdash 2 \cdot 5 + 3 : \N\)}
-\end{prooftree}
+    Можно представить следующий пример вычислений с типами 
+    \begin{prooftree}
+        \AxiomC{\(m, n: \N \vdash 2 \cdot m + n : \N\)}
+        \AxiomC{\(\vdash 2 : \N\)}
+        \BinaryInfC{\(\vdash 2 \cdot 5 + 3 : \N\)}
+    \end{prooftree}
 \end{eg}
 
 \section{Простая теория типов}
@@ -116,7 +116,7 @@
 Теперь займемся суждением о типе --- отношении \(\Gamma \vdash t : A\) или «в контексте \(\Gamma\) переменная \(t\) имеет тип \(A\)» что аналогично «выводимости» в логике первого порядка.
 
 \subsection{Аксиомы}
-Первая часть правил будет относиться к так называемым структурным правилам. Под \(i\) мы будем иметь ввиду любой тип в контексте.
+Первая часть правил будет относиться к так называемым структурным правилам. Под \(i\) мы будем иметь в виду любой тип в контексте.
 
 Перечислим их:
 \begin{itemize}
@@ -247,6 +247,32 @@
     \AxiomC{\(\Gamma, x : \nat, y : C \vdash t_s (x, y) : C\)}
     \TrinaryInfC{\(\Gamma \vdash \rec^C(t_0; (x, y, t_s); S(m)) \rightsquigarrow t_s [m/x, \rec^C(t_0; (x, y, t_s); m)/y] : C\)}
 \end{prooftree} 
+
+Проведем теперь испытание наших определений и ``запрограммируем'' что-нибудь. Начнем с функции суммы. Как известно \(x + 0 = x\) и \(x + S y = S(x + y)\). Тогда мы можем в нашей системе типов определить функцию \(\mathrm{add}(x, y)\) как
+
+\begin{prooftree}
+    \AxiomC{\(x, y: \nat \vdash y: \nat\)}
+    \AxiomC{\(x, y: \nat \vdash x : \nat\)}
+    \AxiomC{\(x,y,z,w : \nat \vdash S(w) : \nat\)}
+    \TrinaryInfC{\(x,y:\nat \vdash \rec(x; z, w, S(w); y) : \nat\)}
+    \UnaryInfC{\(\mathrm{add}(x, y)\)}
+\end{prooftree}
+
+\begin{eg}
+    \[\mathrm{add}(S0, 0) \equiv \rec(S0; z, w, S(w); 0) \rightsquigarrow S0,\]
+    то есть \(1 + 0 = 1\).
+
+    \begin{align*}\mathrm{add}(SS0, SS0) \equiv \rec(SS0; z, w, S(w); SS0) \rightsquigarrow Sw [\rec(SS0; z, w, S(w); S0)/w] \equiv \\ \equiv S(\rec(SS0; z, w, S(w); S0)) \rightsquigarrow S(Sw[\rec(SS0; z, w, S(w); 0)]/w) \equiv \\ \equiv SS(\rec(SS0; z, w, S(w); 0)) \rightsquigarrow SSSS(0),\end{align*}
+    действительно \(2 + 2 = 4\).
+\end{eg}
+
+\section{Модель теории множеств для теории типов}
+Мы будем использовать стандартную модель, где для каждого типа \(A\) существует множество \(\llbracket A\rrbracket^\mathcal{M}\), где \(\mathcal{M}\) --- наша модель. Мы будем её опускать, поскольку она стандартная. Далее мы определяем множества рекурсивно по типу \(A\):
+\begin{itemize}
+    \item \(\llbracket 1 \rrbracket := 1\) (или любой другой синглтон)
+    \item \(\llbracket A \times B \rrbracket := \llbracket A \rrbracket \times \llbracket B \rrbracket\)
+    \item \(\llbracket \N \rrbracket := \N\)
+\end{itemize}
 
 \begin{thebibliography}{2}
 
