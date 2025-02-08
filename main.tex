@@ -7,6 +7,10 @@
 \usepackage[a4paper, total={6in, 9in}]{geometry}
 
 \usepackage{amssymb, amsthm, amsmath, amsfonts, bbm, float, listings, stmaryrd}
+\usepackage{tikz-cd}
+
+\usetikzlibrary{calc}
+
 \usepackage[dvipsnames]{xcolor}
 
 \usepackage{bbm}
@@ -197,7 +201,11 @@
         \end{prooftree}
 \end{itemize}
 
-Чтобы определить рекурсию на \(n \in \N\) нам нужна база \(n = 0\) и индуктивный переход \(n = S(m)\).
+Чтобы определить рекурсию на \(n \in \N\) нам нужна база \(n = 0\) и индуктивный переход \(n = S(m)\). Для этого мы определяем пять переменных \(t_0, x, y, t_s\) и \(n\). Значение \(t_0\) и \(n\) понятно --- это начало и конец рекурсии. Переменные \(x, y\) суть предыдущее значение, следующее значение. Переменная \(t_s\) и есть «следующий элемент» в индукции.
+
+\begin{eg}
+
+\end{eg}
 
 Теперь мы ввели все, что нужно для теории типов. Однако, стоит учитывать один нюанс.
 
@@ -258,13 +266,76 @@
     \UnaryInfC{\(\mathrm{add}(x, y)\)}
 \end{prooftree}
 
+Получается, что для каждого \(\Gamma \vdash x, y : \nat\) мы даем \(\Gamma \vdash \mathrm{add}(x, y) : \nat\).
+
 \begin{eg}
     \[\mathrm{add}(S0, 0) \equiv \rec(S0; z, w, S(w); 0) \rightsquigarrow S0,\]
     то есть \(1 + 0 = 1\).
 
-    \begin{align*}\mathrm{add}(SS0, SS0) \equiv \rec(SS0; z, w, S(w); SS0) \rightsquigarrow Sw [\rec(SS0; z, w, S(w); S0)/w] \equiv \\ \equiv S(\rec(SS0; z, w, S(w); S0)) \rightsquigarrow S(Sw[\rec(SS0; z, w, S(w); 0)]/w) \equiv \\ \equiv SS(\rec(SS0; z, w, S(w); 0)) \rightsquigarrow SSSS(0),\end{align*}
+    \begin{align*}\mathsf{add}(SS0, SS0) \equiv \rec(SS0; z, w, S(w); SS0) \rightsquigarrow Sw [\rec(SS0; z, w, S(w); S0)/w] \equiv \\ \equiv S(\rec(SS0; z, w, S(w); S0)) \rightsquigarrow S(Sw[\rec(SS0; z, w, S(w); 0)]/w) \equiv \\ \equiv SS(\rec(SS0; z, w, S(w); 0)) \rightsquigarrow SSSS(0),\end{align*}
     действительно \(2 + 2 = 4\).
 \end{eg}
+
+\begin{eg}
+Для умножения мы будем использовать уже введенную функцию \(\mathrm{add}(x, y)\). Как мы помним, \(m \cdot 0 := 0\), \(m \cdot S(n) := m \cdot n + m\). Тогда мы можем определить умножение как \(\mathsf{mult}(x, y) := \mathrm{rec}^{\nat} (0; (z, w, \mathsf{add}(w, x)); y)\), если \(x, y : \nat\).
+\end{eg}
+
+\begin{eg}
+Более интересно посмотреть на пример с числами Фибоначчи. Для этого мы определим пары \(p_n := \langle G_n, H_n \rangle\), где \(p_0 = \langle G_0, H_0 \rangle = \langle 0, 1 \rangle\) и \(p_{n+1} = \langle G_{n+1}, H_{n+1} \rangle = \langle H_n, G_n + H_n \rangle\). Тогда мы можем вычислить \(p_n\) следующим образом \[n : \nat \vdash \rec^{\nat \times \nat} (\langle 0, 1 \rangle; (z, w, \langle \pi_2 w, \mathsf{add}(\pi_1 w, \pi_2 w)\rangle); n).\]
+
+Тогда \(n\)-ое число Фибоначчи \(\mathsf{Fib}(n)\) есть \[n : \nat \vdash \pi_1(p_n) : \nat.\]
+\end{eg}
+
+\subsection{Формы суждений}
+
+Пусть \(A\) тип, тогда мы имеем следующие формы суждений (индуктивно определенные независимые отношения):
+\begin{itemize}
+\item \(\Gamma \vdash a:A\)
+\item \(\Gamma \vdash a \rightsquigarrow a':A\)
+\item \(\Gamma \vdash a \rightsquigarrow^* a':A\)
+\end{itemize}
+
+Обсуждаемые нами правила могут быть подразделены на следующие две категории:
+
+\begin{itemize}
+\item выводимые (derivable): если существует вывод правила \(J\) из некоторых заданных допущений \(J_1, J_2, \dots, J_n\).
+\item допустимые (admissible): если из выводимости \(J_1, J_2, \dots, J_n\) следует выводимость \(J\).
+\end{itemize}
+
+Тогда в нашей системе относительно \(\rightsquigarrow^*\) будет верно, что
+\begin{itemize}
+\item Следующее правило выводимо
+\begin{prooftree}
+    \AxiomC{\(\Gamma \vdash a \rightsquigarrow a' : A\)}
+    \AxiomC{\(\Gamma \vdash a' \rightsquigarrow a'' : A\)}
+    \BinaryInfC{\(\Gamma \vdash a \rightsquigarrow^*\)}
+\end{prooftree}
+
+\item Следующее правило допустимо, но не выводимо
+\begin{prooftree}
+    \AxiomC{\(\Gamma \vdash a \rightsquigarrow^* a' : A\)}
+    \AxiomC{\(\Gamma \vdash a' \rightsquigarrow^* a'' : A\)}
+    \BinaryInfC{\(\Gamma \vdash a \rightsquigarrow^*\)}
+\end{prooftree}
+\end{itemize}
+
+Однако, можно доказать, что выводимые правила являются допустимыми. Давайте приведем примеры допустимых правил, которые невыводимы.
+
+Самым простым из них является 
+\begin{prooftree}
+    \AxiomC{\(J_1\)}
+    \UnaryInfC{\(J_2\)}
+\end{prooftree}
+Действительно, из пустого набора правил нельзя произвести такое правило, однако, если \(J_1\) и \(J_2\) выводимы, то и все выражение выводимо.
+
+Есть более интересный пример
+\begin{prooftree}
+    \AxiomC{\(\Gamma \vdash S(n) : \nat\)}
+    \UnaryInfC{\(\Gamma \vdash n : \nat\)}
+\end{prooftree}
+Подобная ситуация называется inversion principle: если тип построен правильно, то и подтип построен правильно. Очевидно, что из наших аксиом мы не можем вывести это правило, однако из выводимости предпосылок будет следовать выводимость самого правила.
+
+Заметим еще одну интересную деталь. Выводимость сохраняется при расширении контекста, тогда как допустимость нет. Пусть \(J\) допустимо, тогда при добавлении правила, что из ничего выводится \(J\) нарушит допустимость \(J\).
 
 \section{Модель теории множеств для теории типов}
 Мы будем использовать стандартную модель, где для каждого типа \(A\) существует множество \(\llbracket A\rrbracket^\mathcal{M}\), где \(\mathcal{M}\) --- наша модель. Мы будем её опускать, поскольку она стандартная. Далее мы определяем множества рекурсивно по типу \(A\):
@@ -290,6 +361,39 @@
 
     \item \(\llbracket \Gamma \rrbracket \overset{\llbracket \Gamma \vdash S_n : A \rrbracket}{\longrightarrow} \llbracket A \rrbracket := \begin{cases}\llbracket \Gamma \rrbracket \overset{\llbracket \Gamma \vdash n : \N \rrbracket}{\longrightarrow} (\N \to \N) & \text{если }A = \N,\\ \text{undefined} & \text{иначе}\end{cases}.\)
 \end{itemize}
+
+В этой модели имеют место следующие результаты
+\begin{lem}
+Если \(\Gamma \vdash t : A\), тогда \(\llbracket \Gamma \vdash t : A \rrbracket\) определен.
+\end{lem}
+\begin{proof}
+Эта лемма доказывается по индукции по \(\Gamma \vdash t : A\).
+\end{proof}
+
+\begin{lem}
+Если \(\Gamma'\)  есть расширение (супермножество) контекста \(\Gamma\) и \(\llbracket \Gamma \vdash t : A \rrbracket\) определен, то \(\llbracket \Gamma' \vdash t : A \rrbracket\) определен.
+\end{lem}
+
+\begin{lem}
+Для данных \(\Gamma, t, A\) и замена \(f : \Delta \to \Gamma\) (например, \(\Gamma = (x_i : A_i)_{i \in I}\), \(f = (a_i)_{i \in I}\), \(\Delta \vdash a_i : A_i\)), термы \((a_i)_{i \in I}\) и \(\Delta\), если \(\llbracket \Gamma \vdash t : C \rrbracket\) определено и каждый \(\llbracket \Delta \vdash a_i : A_i \rrbracket\) определен, тогда \(\llbracket \Delta \vdash t[a_i/x_i] : C \rrbracket\) определен и равен \[\llbracket \Delta \rrbracket \overset{\llbracket \Delta \vdash a_i : A_i \rrbracket}{\longrightarrow} \prod_i \llbracket A_i \rrbracket \vdash \llbracket \Gamma \rrbracket \overset{\llbracket \Gamma \vdash t : C \rrbracket}{\longrightarrow} \llbracket C \rrbracket.\]
+\end{lem}
+\begin{proof}
+По индукции на \(t\).
+\end{proof}
+
+\begin{eg}
+Пусть \(x_1, x_2, x_3 : \N \to x_1 \cdot x_2 \cdot x_3 : \N\) и \(\Delta = \omega : \N\). Построим такую замену для \(a_1 = \omega, a_2 = \omega + 1, a_3 = \omega + 2\) через \[(x_1 \cdot x_2 \cdot x_3)[a_i/x_i] = \omega (\omega + 1)(\omega + 2).\]
+\end{eg}
+
+\subsection{Нормализация}
+
+\begin{lem}
+Если \(\Gamma \vdash a \rightsquigarrow a' : A\) выводимо, тогда \(\Gamma \vdash a : A\) и \(\Gamma \vdash a' : A\) выводимы.
+\end{lem}
+
+\begin{lem}
+Если \(\Gamma \vdash a \rightsquigarrow^* a' : A\) выводимо, тогда \(\Gamma \vdash a : A\) и \(\Gamma \vdash a' : A\) выводимы.
+\end{lem}
 
 \begin{thebibliography}{2}
 
