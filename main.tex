@@ -308,14 +308,14 @@
 \begin{prooftree}
     \AxiomC{\(\Gamma \vdash a \rightsquigarrow a' : A\)}
     \AxiomC{\(\Gamma \vdash a' \rightsquigarrow a'' : A\)}
-    \BinaryInfC{\(\Gamma \vdash a \rightsquigarrow^*\)}
+    \BinaryInfC{\(\Gamma \vdash a \rightsquigarrow^* a''\)}
 \end{prooftree}
 
 \item Следующее правило допустимо, но не выводимо
 \begin{prooftree}
     \AxiomC{\(\Gamma \vdash a \rightsquigarrow^* a' : A\)}
     \AxiomC{\(\Gamma \vdash a' \rightsquigarrow^* a'' : A\)}
-    \BinaryInfC{\(\Gamma \vdash a \rightsquigarrow^*\)}
+    \BinaryInfC{\(\Gamma \vdash a \rightsquigarrow^* a''\)}
 \end{prooftree}
 \end{itemize}
 
