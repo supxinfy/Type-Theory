@@ -338,6 +338,14 @@
 
 Заметим еще одну интересную деталь. Выводимость сохраняется при расширении контекста, тогда как допустимость нет. Пусть \(J\) допустимо, тогда при добавлении правила, что из ничего выводится \(J\) нарушит допустимость \(J\).
 
+\begin{lem}
+    Если \(\Gamma \vdash a \rightsquigarrow a' : A\) выводимо, тогда \(\Gamma \vdash a : A\) и \(\Gamma \vdash a' : A\) выводимы.
+\end{lem}
+
+\begin{lem}
+    Если \(\Gamma \vdash a \rightsquigarrow^* a' : A\) выводимо, тогда \(\Gamma \vdash a : A\) и \(\Gamma \vdash a' : A\) выводимы.
+\end{lem}
+
 \section{Модель теории множеств для теории типов}
 Мы будем использовать стандартную модель, где для каждого типа \(A\) существует множество \(\llbracket A\rrbracket^\mathcal{M}\), где \(\mathcal{M}\) --- наша модель. Мы будем её опускать, поскольку она стандартная. Далее мы определяем множества рекурсивно по типу \(A\):
 \begin{itemize}
@@ -376,10 +384,7 @@
 \end{proof}
 
 \begin{lem}
-    Если \(\Gamma'\)  есть расширение (супермножество) контекста \(\Gamma\) и \(\llbracket \Gamma \vdash t : A \rrbracket\) определен, то \(\llbracket \Gamma' \vdash t : A \rrbracket\) определен.
-\end{lem}
-\begin{proof}
-    Мы доказываем это по индукции на \(t\).
+    Если \(\Gamma'\)  есть расширение (супермножество) контекста \(\Gamma\) и \(\llbracket \Gamma \vdash t : A \rrbracket\) определен, то \(\llbracket \Gamma' \vdash t : A \rrbracket\) определен. В виде диаграммы это выглядит так     
     \begin{center}
         \shorthandoff{"} % Disable active character handling for "
         \begin{tikzcd}
@@ -392,6 +397,23 @@
         \end{tikzcd}
         \shorthandon{"} % Restore original behavior
     \end{center}
+\end{lem}
+\begin{proof}
+    Мы доказываем это по индукции на \(t\). Разберем каждый случай. Начнем со случая когда \(t\) есть \(x_1\) (переменная), тогда если \(\llbracket \Gamma \vdash x_i:A \rrbracket\) определено, то легко видеть, что \(x_i[a_i/x_i] \equiv a_i\) и имеет место следующая диаграмма 
+
+    \begin{center}
+        \shorthandoff{"} % Disable active character handling for "
+        \begin{tikzcd}
+            {\llbracket\Gamma'\rrbracket} && \llbracket A\rrbracket \\
+                                          & \llbracket\Gamma\rrbracket
+                                          \arrow[""{name=0, anchor=center, inner sep=0}, "{\pi_i}", from=1-1, to=1-3]
+                                          \arrow["{\text{забывающий}}"', bend right=15, from=1-1, to=2-2]
+                                          \arrow["{\pi_i}"', bend right=15, from=2-2, to=1-3]
+                                          \arrow[shorten <=3pt, shorten >=5pt, equal, nfold, from=2-2, to=0]
+        \end{tikzcd}
+        \shorthandon{"} % Restore original behavior
+    \end{center}
+
 \end{proof}
 
 \begin{lem}
@@ -453,14 +475,6 @@
     Терм \(t\) сильно нормализируем, если любая редукция, в конечном счете, приводит к одной и той же нормальной форме \(t'\).
 \end{defn}
 
-\begin{lem}
-    Если \(\Gamma \vdash a \rightsquigarrow a' : A\) выводимо, тогда \(\Gamma \vdash a : A\) и \(\Gamma \vdash a' : A\) выводимы.
-\end{lem}
-
-\begin{lem}
-    Если \(\Gamma \vdash a \rightsquigarrow^* a' : A\) выводимо, тогда \(\Gamma \vdash a : A\) и \(\Gamma \vdash a' : A\) выводимы.
-\end{lem}
-
 Напомним некоторые правила редукции
 \begin{itemize}
     \item \(\pi_1 \langle t_1, t_2 \rangle \rightsquigarrow t_1\)
@@ -497,6 +511,16 @@
     \end{enumerate}
     то есть конструкторы с нормальными аргументами. Эта лемма называется канонической леммой (canonicity).
 \end{lem}
+\begin{proof}
+    Будем доказывать индукцией по \(\Gamma \vdash t : A\). Если \(t\) является замкнутым нормальным термом, то он канонической формы. В самом деле, если \(t\) --- переменная, то нечего доказывать, поскольку \(t\) замкнуто. Если же \(t\) конструктор, то в силу того, что его аргументы нормальны и замкнуты (по предыдущей лемме) сам конструктор каноничен. И последний случай, когда \(t\) элиминативная форма, тогда будем доказывать от противного. Если аргументы \(t\) нормальны, то мы приходим к канонической форме из предыдущих случаев. То есть \(t\) не нормален; противоречие.
+\end{proof}
+
+Таким образом, мы описали все нормальные (замкнутые) термы в нашей теории типов. Из этого можно получить следующее следствие.
+\begin{cor}
+    Любой замкнутый нормальный терм вида \(\Gamma \vdash a : \nat\) представляется в виде \(\underline{n}\) для некоторого натурального \(n\).
+\end{cor}
+
+\section{Функциональный тип}
 
 \begin{thebibliography}{2}
 
