@@ -6,7 +6,7 @@
 
 \usepackage[a4paper, total={6in, 9in}]{geometry}
 
-\usepackage{amssymb, amsthm, amsmath, amsfonts, bbm, float, listings, stmaryrd}
+\usepackage{amssymb, amsthm, amsmath, amsfonts, bbm, float, listings, stmaryrd, pagecolor}
 \usepackage{tikz-cd}
 
 \usetikzlibrary{calc}
@@ -34,6 +34,7 @@
 
 \usetikzlibrary{positioning, shapes.geometric}
 \usetikzlibrary{graphs} 
+\usetikzlibrary{nfold}
 
 \tikzset{fontscale/.style = {font=\relsize{#1}}
 }
@@ -277,46 +278,46 @@
 \end{eg}
 
 \begin{eg}
-Для умножения мы будем использовать уже введенную функцию \(\mathrm{add}(x, y)\). Как мы помним, \(m \cdot 0 := 0\), \(m \cdot S(n) := m \cdot n + m\). Тогда мы можем определить умножение как \(\mathsf{mult}(x, y) := \mathrm{rec}^{\nat} (0; (z, w, \mathsf{add}(w, x)); y)\), если \(x, y : \nat\).
+    Для умножения мы будем использовать уже введенную функцию \(\mathrm{add}(x, y)\). Как мы помним, \(m \cdot 0 := 0\), \(m \cdot S(n) := m \cdot n + m\). Тогда мы можем определить умножение как \(\mathsf{mult}(x, y) := \mathrm{rec}^{\nat} (0; (z, w, \mathsf{add}(w, x)); y)\), если \(x, y : \nat\).
 \end{eg}
 
 \begin{eg}
-Более интересно посмотреть на пример с числами Фибоначчи. Для этого мы определим пары \(p_n := \langle G_n, H_n \rangle\), где \(p_0 = \langle G_0, H_0 \rangle = \langle 0, 1 \rangle\) и \(p_{n+1} = \langle G_{n+1}, H_{n+1} \rangle = \langle H_n, G_n + H_n \rangle\). Тогда мы можем вычислить \(p_n\) следующим образом \[n : \nat \vdash \rec^{\nat \times \nat} (\langle 0, 1 \rangle; (z, w, \langle \pi_2 w, \mathsf{add}(\pi_1 w, \pi_2 w)\rangle); n).\]
+    Более интересно посмотреть на пример с числами Фибоначчи. Для этого мы определим пары \(p_n := \langle G_n, H_n \rangle\), где \(p_0 = \langle G_0, H_0 \rangle = \langle 0, 1 \rangle\) и \(p_{n+1} = \langle G_{n+1}, H_{n+1} \rangle = \langle H_n, G_n + H_n \rangle\). Тогда мы можем вычислить \(p_n\) следующим образом \[n : \nat \vdash \rec^{\nat \times \nat} (\langle 0, 1 \rangle; (z, w, \langle \pi_2 w, \mathsf{add}(\pi_1 w, \pi_2 w)\rangle); n).\]
 
-Тогда \(n\)-ое число Фибоначчи \(\mathsf{Fib}(n)\) есть \[n : \nat \vdash \pi_1(p_n) : \nat.\]
+    Тогда \(n\)-ое число Фибоначчи \(\mathsf{Fib}(n)\) есть \[n : \nat \vdash \pi_1(p_n) : \nat.\]
 \end{eg}
 
 \subsection{Формы суждений}
 
 Пусть \(A\) тип, тогда мы имеем следующие формы суждений (индуктивно определенные независимые отношения):
 \begin{itemize}
-\item \(\Gamma \vdash a:A\)
-\item \(\Gamma \vdash a \rightsquigarrow a':A\)
-\item \(\Gamma \vdash a \rightsquigarrow^* a':A\)
+    \item \(\Gamma \vdash a:A\)
+    \item \(\Gamma \vdash a \rightsquigarrow a':A\)
+    \item \(\Gamma \vdash a \rightsquigarrow^* a':A\)
 \end{itemize}
 
 Обсуждаемые нами правила могут быть подразделены на следующие две категории:
 
 \begin{itemize}
-\item выводимые (derivable): если существует вывод правила \(J\) из некоторых заданных допущений \(J_1, J_2, \dots, J_n\).
-\item допустимые (admissible): если из выводимости \(J_1, J_2, \dots, J_n\) следует выводимость \(J\).
+    \item выводимые (derivable): если существует вывод правила \(J\) из некоторых заданных допущений \(J_1, J_2, \dots, J_n\).
+    \item допустимые (admissible): если из выводимости \(J_1, J_2, \dots, J_n\) следует выводимость \(J\).
 \end{itemize}
 
 Тогда в нашей системе относительно \(\rightsquigarrow^*\) будет верно, что
 \begin{itemize}
-\item Следующее правило выводимо
-\begin{prooftree}
-    \AxiomC{\(\Gamma \vdash a \rightsquigarrow a' : A\)}
-    \AxiomC{\(\Gamma \vdash a' \rightsquigarrow a'' : A\)}
-    \BinaryInfC{\(\Gamma \vdash a \rightsquigarrow^* a''\)}
-\end{prooftree}
+    \item Следующее правило выводимо
+        \begin{prooftree}
+            \AxiomC{\(\Gamma \vdash a \rightsquigarrow a' : A\)}
+            \AxiomC{\(\Gamma \vdash a' \rightsquigarrow a'' : A\)}
+            \BinaryInfC{\(\Gamma \vdash a \rightsquigarrow^* a''\)}
+        \end{prooftree}
 
-\item Следующее правило допустимо, но не выводимо
-\begin{prooftree}
-    \AxiomC{\(\Gamma \vdash a \rightsquigarrow^* a' : A\)}
-    \AxiomC{\(\Gamma \vdash a' \rightsquigarrow^* a'' : A\)}
-    \BinaryInfC{\(\Gamma \vdash a \rightsquigarrow^* a''\)}
-\end{prooftree}
+    \item Следующее правило допустимо, но не выводимо
+        \begin{prooftree}
+            \AxiomC{\(\Gamma \vdash a \rightsquigarrow^* a' : A\)}
+            \AxiomC{\(\Gamma \vdash a' \rightsquigarrow^* a'' : A\)}
+            \BinaryInfC{\(\Gamma \vdash a \rightsquigarrow^* a''\)}
+        \end{prooftree}
 \end{itemize}
 
 Однако, можно доказать, что выводимые правила являются допустимыми. Давайте приведем примеры допустимых правил, которые невыводимы.
@@ -363,79 +364,109 @@
 \end{itemize}
 
 \begin{note}
-Заметим, что \(\nat\) --- это синтаксический класс натуральных чисел, но не множество натуральных чисел \(\N\). 
+    Заметим, что \(\nat\) --- это синтаксический класс натуральных чисел, но не множество натуральных чисел \(\N\). 
 \end{note}
 
 В этой модели имеют место следующие результаты
 \begin{lem}
-Если \(\Gamma \vdash t : A\), тогда \(\llbracket \Gamma \vdash t : A \rrbracket\) определен.
+    Если \(\Gamma \vdash t : A\), тогда \(\llbracket \Gamma \vdash t : A \rrbracket\) определен.
 \end{lem}
 \begin{proof}
-Эта лемма доказывается по индукции по \(\Gamma \vdash t : A\).
+    Эта лемма доказывается по индукции по \(\Gamma \vdash t : A\).
 \end{proof}
 
 \begin{lem}
-Если \(\Gamma'\)  есть расширение (супермножество) контекста \(\Gamma\) и \(\llbracket \Gamma \vdash t : A \rrbracket\) определен, то \(\llbracket \Gamma' \vdash t : A \rrbracket\) определен.
-\end{lem}
-
-\begin{lem}
-Для данных \(\Gamma, t, A\) и замена \(f : \Delta \to \Gamma\) (например, \(\Gamma = (x_i : A_i)_{i \in I}\), \(f = (a_i)_{i \in I}\), \(\Delta \vdash a_i : A_i\)), термы \((a_i)_{i \in I}\) и \(\Delta\), если \(\llbracket \Gamma \vdash t : C \rrbracket\) определено и каждый \(\llbracket \Delta \vdash a_i : A_i \rrbracket\) определен, тогда \(\llbracket \Delta \vdash t[a_i/x_i] : C \rrbracket\) определен и равен \[\llbracket \Delta \rrbracket \overset{\llbracket \Delta \vdash a_i : A_i \rrbracket}{\longrightarrow} \prod_i \llbracket A_i \rrbracket \vdash \llbracket \Gamma \rrbracket \overset{\llbracket \Gamma \vdash t : C \rrbracket}{\longrightarrow} \llbracket C \rrbracket.\]
+    Если \(\Gamma'\)  есть расширение (супермножество) контекста \(\Gamma\) и \(\llbracket \Gamma \vdash t : A \rrbracket\) определен, то \(\llbracket \Gamma' \vdash t : A \rrbracket\) определен.
 \end{lem}
 \begin{proof}
-По индукции на \(t\).
+    Мы доказываем это по индукции на \(t\).
+    \begin{center}
+        \shorthandoff{"} % Disable active character handling for "
+        \begin{tikzcd}
+            {\llbracket\Gamma'\rrbracket} && \llbracket A\rrbracket \\
+                                          & \llbracket\Gamma\rrbracket
+                                          \arrow[""{name=0, anchor=center, inner sep=0}, "", from=1-1, to=1-3]
+                                          \arrow["{\text{забывающий}}"', bend right=15, from=1-1, to=2-2]
+                                          \arrow["{\llbracket\Gamma \vdash t:A\rrbracket}"', bend right=15, from=2-2, to=1-3]
+                                          \arrow[shorten <=3pt, shorten >=5pt, equal, nfold, from=2-2, to=0]
+        \end{tikzcd}
+        \shorthandon{"} % Restore original behavior
+    \end{center}
+\end{proof}
+
+\begin{lem}
+    Для данных \(\Gamma, t, A\) и замена \(f : \Delta \to \Gamma\) (например, \(\Gamma = (x_i : A_i)_{i \in I}\), \(f = (a_i)_{i \in I}\), \(\Delta \vdash a_i : A_i\)), термы \((a_i)_{i \in I}\) и \(\Delta\), если \(\llbracket \Gamma \vdash t : C \rrbracket\) определено и каждый \(\llbracket \Delta \vdash a_i : A_i \rrbracket\) определен, тогда \(\llbracket \Delta \vdash t[a_i/x_i] : C \rrbracket\) определен и равен \[\llbracket \Delta \rrbracket \overset{\llbracket \Delta \vdash a_i : A_i \rrbracket}{\longrightarrow} \prod_i \llbracket A_i \rrbracket \vdash \llbracket \Gamma \rrbracket \overset{\llbracket \Gamma \vdash t : C \rrbracket}{\longrightarrow} \llbracket C \rrbracket.\]
+\end{lem}
+\begin{proof}
+    По индукции на \(t\).
 \end{proof}
 
 \begin{eg}
-Пусть \(x_1, x_2, x_3 : \N \to x_1 \cdot x_2 \cdot x_3 : \N\) и \(\Delta = \omega : \N\). Построим такую замену для \(a_1 = \omega, a_2 = \omega + 1, a_3 = \omega + 2\) через \[(x_1 \cdot x_2 \cdot x_3)[a_i/x_i] = \omega (\omega + 1)(\omega + 2).\]
+    Пусть \(x_1, x_2, x_3 : \N \to x_1 \cdot x_2 \cdot x_3 : \N\) и \(\Delta = \omega : \N\). Построим такую замену для \(a_1 = \omega, a_2 = \omega + 1, a_3 = \omega + 2\) через \[(x_1 \cdot x_2 \cdot x_3)[a_i/x_i] = \omega (\omega + 1)(\omega + 2).\]
+    \begin{center}
+        \shorthandoff{"} 
+        \begin{tikzcd}
+            \N && {\N^3} && \N \\
+            \omega && {(\omega, \omega+1, \omega+2)} \\
+                   && {(x_1, x_2, x_3)} && {x_1\cdot x_2\cdot x_3} \\
+            \omega &&&& {\omega (\omega+1)(\omega+2)}
+            \arrow["{a_i}", from=1-1, to=1-3]
+            \arrow["{x_1, x_2, x_3}", from=1-3, to=1-5]
+            \arrow[maps to, from=2-1, to=2-3]
+            \arrow[maps to, from=3-3, to=3-5]
+            \arrow[maps to, from=4-1, to=4-5]
+        \end{tikzcd}
+        \shorthandon{"}
+    \end{center}
 \end{eg}
 
 \subsection{Нормализация}
 
 Под нормализацией в теории типов понимают приведение выражения к нормальной или упрощенной форме. Мы уже ввели правила редукции, если последовательное применение их приведет к выражению, которое уже не редуцируется, то мы его будем называть нормальным. Давайте введем эти определения
 \begin{defn}
-Тип \(\Gamma \vdash t: A\) называется нормальным, если он максимален относительно редукции (\(\rightsquigarrow^*\))
+    Тип \(\Gamma \vdash t: A\) называется нормальным, если он максимален относительно редукции (\(\rightsquigarrow^*\))
 \end{defn}
 
 \begin{defn}
-Терм \(\Gamma \vdash t: A\) называется нормализируемым, если существует нормальный тип \(\Gamma \vdash t' : A\), такой что \(\Gamma \vdash t \rightsquigarrow^* t' : A\).
+    Терм \(\Gamma \vdash t: A\) называется нормализируемым, если существует нормальный тип \(\Gamma \vdash t' : A\), такой что \(\Gamma \vdash t \rightsquigarrow^* t' : A\).
 \end{defn}
 
 Напомним, что если \(\vdash n : \nat\), то \(\underline{n}\) называется нумералом и обозначает \(S^n 0\).
 
 \begin{eg}
-Как мы уже видели \(\vdash \underline{2} + \underline{2} : \N\), тогда этот терм нормализируем, поскольку \(\vdash \underline{2} + \underline{2} \rightsquigarrow \underline{4} : \N\).
+    Как мы уже видели \(\vdash \underline{2} + \underline{2} : \N\), тогда этот терм нормализируем, поскольку \(\vdash \underline{2} + \underline{2} \rightsquigarrow \underline{4} : \N\).
 
-Терм же \(\vdash \underline{2} : \N\) нормален, поскольку не существует редукции для него.
+    Терм же \(\vdash \underline{2} : \N\) нормален, поскольку не существует редукции для него.
 \end{eg}
 
 Как можно заметить по приведенному примеру, редукция совершает вычисление.
 
 \begin{defn}
-Мы говорим, что теория типов (строго) нормализуема, если каждый терм (строго) нормализуем.
+    Мы говорим, что теория типов (строго) нормализуема, если каждый терм (строго) нормализуем.
 \end{defn}
 
 \begin{thm}
-Теория типов с \(1, \times, \nat\) строго нормализуема.
+    Теория типов с \(1, \times, \nat\) строго нормализуема.
 \end{thm}
 
 \begin{defn}
-Терм \(t\) сильно нормализируем, если любая редукция, в конечном счете, приводит к одной и той же нормальной форме \(t'\).
+    Терм \(t\) сильно нормализируем, если любая редукция, в конечном счете, приводит к одной и той же нормальной форме \(t'\).
 \end{defn}
 
 \begin{lem}
-Если \(\Gamma \vdash a \rightsquigarrow a' : A\) выводимо, тогда \(\Gamma \vdash a : A\) и \(\Gamma \vdash a' : A\) выводимы.
+    Если \(\Gamma \vdash a \rightsquigarrow a' : A\) выводимо, тогда \(\Gamma \vdash a : A\) и \(\Gamma \vdash a' : A\) выводимы.
 \end{lem}
 
 \begin{lem}
-Если \(\Gamma \vdash a \rightsquigarrow^* a' : A\) выводимо, тогда \(\Gamma \vdash a : A\) и \(\Gamma \vdash a' : A\) выводимы.
+    Если \(\Gamma \vdash a \rightsquigarrow^* a' : A\) выводимо, тогда \(\Gamma \vdash a : A\) и \(\Gamma \vdash a' : A\) выводимы.
 \end{lem}
 
 Напомним некоторые правила редукции
 \begin{itemize}
-\item \(\pi_1 \langle t_1, t_2 \rangle \rightsquigarrow t_1\)
-\item \(\pi_2 \langle t_1, t_2 \rangle \rightsquigarrow t_2\)
-\item \(\rec(d_0; x, y, d_s; 0) \rightsquigarrow d_0\)
-\item \(\rec(d_0; x, y, d_s; Sn) \rightsquigarrow d_s [n/x, \rec(d_0; x, y, d_s; n)/y]\)
+    \item \(\pi_1 \langle t_1, t_2 \rangle \rightsquigarrow t_1\)
+    \item \(\pi_2 \langle t_1, t_2 \rangle \rightsquigarrow t_2\)
+    \item \(\rec(d_0; x, y, d_s; 0) \rightsquigarrow d_0\)
+    \item \(\rec(d_0; x, y, d_s; Sn) \rightsquigarrow d_s [n/x, \rec(d_0; x, y, d_s; n)/y]\)
 \end{itemize}
 
 Формы \(\pi_1, \pi_2\) и \(\rec\) являются элиминативными формами (elimination forms), поскольку они сводят термы к менее сложным.
@@ -444,27 +475,27 @@
 
 Существуют еще правила конгруэнции на \(\rightsquigarrow\) такие как 
 \begin{prooftree}
-\AxiomC{\(\Gamma \vdash t \rightsquigarrow t' : \nat\)}
-\UnaryInfC{\(\Gamma \vdash St \rightsquigarrow St' : \nat\)}
+    \AxiomC{\(\Gamma \vdash t \rightsquigarrow t' : \nat\)}
+    \UnaryInfC{\(\Gamma \vdash St \rightsquigarrow St' : \nat\)}
 \end{prooftree}
 
 Чтобы доказать теорему о нормализируемости теории типов нам пригодится следующая лемма.
 \begin{lem}
-Любой подтерм нормального терма нормален.
+    Любой подтерм нормального терма нормален.
 \end{lem}
 \begin{proof}
-Очевидно из возможности редукции внутри терма.
+    Очевидно из возможности редукции внутри терма.
 \end{proof}
 
 \begin{lem}
-Любой нормальный замкнутый терм \(\vdash t : A\) есть одна из следующих форм:
-\begin{enumerate}
-\item \(\Gamma \vdash \langle \rangle : 1\),
-\item \(\Gamma \vdash \langle t_1, t_2 \rangle : A \times B\), если \(t_1, t_2\) нормальны,
-\item \(\Gamma \vdash 0 : \nat\),
-\item \(\Gamma \vdash Sn : \nat\), если \(n\) нормален,
-\end{enumerate}
-то есть конструкторы с нормальными аргументами. Эта каноническая лемма (canonicity).
+    Любой нормальный замкнутый терм \(\vdash t : A\) есть одна из следующих форм:
+    \begin{enumerate}
+        \item \(\Gamma \vdash \langle \rangle : 1\),
+        \item \(\Gamma \vdash \langle t_1, t_2 \rangle : A \times B\), если \(t_1, t_2\) нормальны,
+        \item \(\Gamma \vdash 0 : \nat\),
+        \item \(\Gamma \vdash Sn : \nat\), если \(n\) нормален,
+    \end{enumerate}
+    то есть конструкторы с нормальными аргументами. Эта лемма называется канонической леммой (canonicity).
 \end{lem}
 
 \begin{thebibliography}{2}
