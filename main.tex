@@ -362,6 +362,10 @@
     \item \(\llbracket \Gamma \rrbracket \overset{\llbracket \Gamma \vdash S_n : A \rrbracket}{\longrightarrow} \llbracket A \rrbracket := \begin{cases}\llbracket \Gamma \rrbracket \overset{\llbracket \Gamma \vdash n : \N \rrbracket}{\longrightarrow} (\N \to \N) & \text{если }A = \N,\\ \text{undefined} & \text{иначе}\end{cases}.\)
 \end{itemize}
 
+\begin{note}
+Заметим, что \(\nat\) --- это синтаксический класс натуральных чисел, но не множество натуральных чисел \(\N\). 
+\end{note}
+
 В этой модели имеют место следующие результаты
 \begin{lem}
 Если \(\Gamma \vdash t : A\), тогда \(\llbracket \Gamma \vdash t : A \rrbracket\) определен.
@@ -386,6 +390,27 @@
 \end{eg}
 
 \subsection{Нормализация}
+
+Под нормализацией в теории типов понимают приведение выражения к нормальной или упрощенной форме. Мы уже ввели правила редукции, если последовательное применение их приведет к выражению, которое уже не редуцируется, то мы его будем называть нормальным. Давайте введем эти определения
+\begin{defn}
+Тип \(\Gamma \vdash t: A\) называется нормальным, если он максимален относительно редукции (\(\rightsquigarrow^*\))
+\end{defn}
+
+\begin{defn}
+Терм \(\Gamma \vdash t: A\) называется нормализируемым, если существует нормальный тип \(\Gamma \vdash t' : A\), такой что \(\Gamma \vdash t \rightsquigarrow^* t' : A\).
+\end{defn}
+
+Напомним, что если \(\vdash n : \nat\), то \(\underline{n}\) называется нумералом и обозначает \(S^n 0\).
+
+\begin{eg}
+Как мы уже видели \(\vdash \underline{2} + \underline{2} : \N\), тогда этот терм нормализируем, поскольку \(\vdash \underline{2} + \underline{2} \rightsquigarrow \underline{4} : \N\).
+\end{eg}
+
+Как можно заметить по приведенному примеру, редукция совершает вычисление.
+
+\begin{defn}
+Терм \(t\) сильно нормализируем, если любая редукция, в конечном счете, приводит к одной и той же нормальной форме \(t'\).
+\end{defn}
 
 \begin{lem}
 Если \(\Gamma \vdash a \rightsquigarrow a' : A\) выводимо, тогда \(\Gamma \vdash a : A\) и \(\Gamma \vdash a' : A\) выводимы.
