@@ -404,9 +404,19 @@
 
 \begin{eg}
 Как мы уже видели \(\vdash \underline{2} + \underline{2} : \N\), тогда этот терм нормализируем, поскольку \(\vdash \underline{2} + \underline{2} \rightsquigarrow \underline{4} : \N\).
+
+Терм же \(\vdash \underline{2} : \N\) нормален, поскольку не существует редукции для него.
 \end{eg}
 
 Как можно заметить по приведенному примеру, редукция совершает вычисление.
+
+\begin{defn}
+Мы говорим, что теория типов (строго) нормализуема, если каждый терм (строго) нормализуем.
+\end{defn}
+
+\begin{thm}
+Теория типов с \(1, \times, \nat\) строго нормализуема.
+\end{thm}
 
 \begin{defn}
 Терм \(t\) сильно нормализируем, если любая редукция, в конечном счете, приводит к одной и той же нормальной форме \(t'\).
@@ -418,6 +428,43 @@
 
 \begin{lem}
 Если \(\Gamma \vdash a \rightsquigarrow^* a' : A\) выводимо, тогда \(\Gamma \vdash a : A\) и \(\Gamma \vdash a' : A\) выводимы.
+\end{lem}
+
+Напомним некоторые правила редукции
+\begin{itemize}
+\item \(\pi_1 \langle t_1, t_2 \rangle \rightsquigarrow t_1\)
+\item \(\pi_2 \langle t_1, t_2 \rangle \rightsquigarrow t_2\)
+\item \(\rec(d_0; x, y, d_s; 0) \rightsquigarrow d_0\)
+\item \(\rec(d_0; x, y, d_s; Sn) \rightsquigarrow d_s [n/x, \rec(d_0; x, y, d_s; n)/y]\)
+\end{itemize}
+
+Формы \(\pi_1, \pi_2\) и \(\rec\) являются элиминативными формами (elimination forms), поскольку они сводят термы к менее сложным.
+
+Противоположны им конструкторы или интро формы (intro forms), такие как \(\langle\rangle, \langle\cdot,\cdot\rangle, 0, S\).
+
+Существуют еще правила конгруэнции на \(\rightsquigarrow\) такие как 
+\begin{prooftree}
+\AxiomC{\(\Gamma \vdash t \rightsquigarrow t' : \nat\)}
+\UnaryInfC{\(\Gamma \vdash St \rightsquigarrow St' : \nat\)}
+\end{prooftree}
+
+Чтобы доказать теорему о нормализируемости теории типов нам пригодится следующая лемма.
+\begin{lem}
+Любой подтерм нормального терма нормален.
+\end{lem}
+\begin{proof}
+Очевидно из возможности редукции внутри терма.
+\end{proof}
+
+\begin{lem}
+Любой нормальный замкнутый терм \(\vdash t : A\) есть одна из следующих форм:
+\begin{enumerate}
+\item \(\Gamma \vdash \langle \rangle : 1\),
+\item \(\Gamma \vdash \langle t_1, t_2 \rangle : A \times B\), если \(t_1, t_2\) нормальны,
+\item \(\Gamma \vdash 0 : \nat\),
+\item \(\Gamma \vdash Sn : \nat\), если \(n\) нормален,
+\end{enumerate}
+то есть конструкторы с нормальными аргументами. Эта каноническая лемма (canonicity).
 \end{lem}
 
 \begin{thebibliography}{2}
