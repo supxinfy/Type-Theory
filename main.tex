@@ -309,7 +309,7 @@
 
 \end{eg}
 \begin{eg}
-    Более интересно посмотреть на пример с числами Фибоначчи. Для этого мы определим пары \(p_n := \langle G_n, H_n \rangle\), где \(p_0 = \langle G_0, H_0 \rangle = \langle 0, 1 \rangle\) и \(p_{n+1} = \langle G_{n+1}, H_{n+1} \rangle = \langle H_n, G_n + H_n \rangle\). Тогда мы можем вычислить \(p_n\) следующим образом \[n : \nat \vdash \rec^{\nat \times \nat} (\langle 0, 1 \rangle; (z, w\,.\, \langle \pi_2 w, \mathsf{add}(\pi_1 w, \pi_2 w)\rangle); n).\]
+    Более интересно посмотреть на пример с числами Фибоначчи. Для этого мы определим пары \(p_n := \langle G_n, H_n \rangle\), где \(p_0 = \langle G_0, H_0 \rangle = \langle 0, 1 \rangle\) и \(p_{n+1} = \langle G_{n+1}, H_{n+1} \rangle = \langle H_n, G_n + H_n \rangle\). Тогда мы можем вычислить \(p_n\) следующим образом \[n : \nat \vdash \rec^{\nat \times \nat} (\langle 0, 1 \rangle; (z, w\,.\, \langle \pi_2 w\,.\, \mathsf{add}(\pi_1 w, \pi_2 w)\rangle); n).\]
 
     Тогда \(n\)-ое число Фибоначчи \(\mathsf{Fib}(n)\) есть \[n : \nat \vdash \pi_1(p_n) : \nat.\]
 \end{eg}
