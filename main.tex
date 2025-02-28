@@ -99,7 +99,11 @@
 Из-за этой проблемы сформировалось, своего рода, ad hoc решение, называемое строгой типизацией. 
 
 \begin{note}
-    В математике любой объект можно представить как некоторое множество, однако это не лишает теорию типов приложимости. Нам важно, что натуральное число --- это не просто множество, а что-то новое, обладающие свойствами «числа».
+    В математике любой объект можно представить как некоторое множество, однако это не лишает теорию типов приложимости. Нам важно, что натуральное число --- это не просто множество, а что-то новое, обладающее свойством «числа».
+\end{note}
+
+\begin{note}
+    Заметим, что с философской точки зрения теория категорий является полностью независимой теорией оснований математики от теории множеств. Существует подход --- интуицианисткая теория типов, --- позволяющий вывести теорию категорий из теории типов. Иными словами, можно считать, что теория типов является более фундаментальным подходом к основаниям математики, чем другие теории.
 \end{note}
 
 \begin{eg}
@@ -138,7 +142,7 @@
         \end{prooftree}
 \end{itemize}
 
-Аксиому подстановки можно вывести из следующих аксиом:
+Аксиоме подстановки подобны следующие аксиомы:
 \begin{itemize}
     \itemОслабление (weakening):
     \begin{prooftree}
@@ -161,48 +165,59 @@
 \begin{eg}
     Пример работы аксиомы подстановки
     \begin{prooftree}
-        \AxiomC{\(y : \N \vdash y \cdot y : \N \quad x_1, x_2 : \N \vdash x_1 + x_2 : \N\)}
-        \UnaryInfC{\(x_1, x_2 : \N \vdash x_1 \cdot x_1 + x_2 \cdot x_2 : \N\)}
+        \AxiomC{\(y : \N \vdash y \cdot y : \N\)}
+        \AxiomC{\(x_1, x_2 : \N \vdash x_1 + x_2 : \N\)}
+        \BinaryInfC{\(x_1, x_2 : \N \vdash x_1 \cdot x_1 + x_2 \cdot x_2 : \N\)}
     \end{prooftree}
 \end{eg}
 
+\begin{note}
+    Разница между \(\nat\) и \(\N\) фундаментальна. Первое --- это синтаксический класс, класс правил, которым натуральные числа следуют. Второе же --- это множество, поэтому мы используем его, подразумевая, что утверждения вроде \(y : \N \vdash y \cdot y : \N\) нам доказывать не нужно.
+\end{note}
+
+Мы будем пользоваться общей аксиомой подстановки, хотя, иногда имеет смысл ослабить систему теории типов.
+
+\begin{note}
+    Обычно, все доказательства в теории типов --- это индукция по типу или терму, с разбором всех случаев. Чем сильнее аксиома, тем больше существует особых случаев. Поэтому в некоторых теориях типов доказательства становятся очень большими и сложными с технической точки зрения.
+\end{note}
+
 Наша система все еще не является теорией типов, поскольку у нас нет правил вывода типов. Давайте их введем:
 \begin{itemize}
-    \itemПроизведение
-    \begin{prooftree}
-        \AxiomC{\(\Gamma \vdash t_1 : A_1, \Gamma \vdash t_2 : A_2\)}
-        \UnaryInfC{\(\Gamma \vdash \langle t_1, t_2\rangle : A_1 \times A_2\)}
-    \end{prooftree}
-    \itemПроекция
-    \begin{prooftree}
-        \AxiomC{\(\Gamma \vdash t : A_1 \times A_2\)}
-        \UnaryInfC{\(\Gamma \vdash p_i(t) : A_i\)}
-    \end{prooftree}
-    \item\(0\)
+    \item«Произведение»:
+        \begin{prooftree}
+            \AxiomC{\(\Gamma \vdash t_1 : A_1, \Gamma \vdash t_2 : A_2\)}
+            \UnaryInfC{\(\Gamma \vdash \langle t_1, t_2\rangle : A_1 \times A_2\)}
+        \end{prooftree}
+    \item«Проекция»:
+        \begin{prooftree}
+            \AxiomC{\(\Gamma \vdash t : A_1 \times A_2\)}
+            \UnaryInfC{\(\Gamma \vdash \pi_i(t) : A_i\)}
+        \end{prooftree}
+    \item«\(0\)»:
         \begin{prooftree}
             \AxiomC{\(\)}
             \UnaryInfC{\(\Gamma \vdash 0 : \nat\)}
         \end{prooftree}
-    \item\(S(n)\)
+    \item«\(S(n)\)»:
         \begin{prooftree}
             \AxiomC{\(\Gamma \vdash n : \nat\)}
             \UnaryInfC{\(\Gamma \vdash S(n) : \nat\)}
         \end{prooftree}
-    \item\(1\)
+    \item«\(1\)»:
         \begin{prooftree}
             \AxiomC{\(\)}
             \UnaryInfC{\(\Gamma \vdash \langle \rangle : 1\)}
         \end{prooftree}
-    \item\(\rec\)
+    \item«\(\rec\)»:
         \begin{prooftree}
             \AxiomC{\(\Gamma \vdash n : \nat\)}
             \AxiomC{\(\Gamma \vdash t_0 : C\)}
             \AxiomC{\(\Gamma, x : \nat, y : C \vdash t_s (x, y) : C\)}
-            \TrinaryInfC{\(\Gamma \vdash \rec(t_0; (x, y, t_s); n) : C\)}
+            \TrinaryInfC{\(\Gamma \vdash \rec(t_0; (x, y \; . \; t_s); n) : C\)}
         \end{prooftree}
 \end{itemize}
 
-Чтобы определить рекурсию на \(n \in \N\) нам нужна база \(n = 0\) и индуктивный переход \(n = S(m)\). Для этого мы определяем пять переменных \(t_0, x, y, t_s\) и \(n\). Значение \(t_0\) и \(n\) понятно --- это начало и конец рекурсии. Переменные \(x, y\) суть предыдущее значение, следующее значение. Переменная \(t_s\) и есть «следующий элемент» в индукции.
+Чтобы определить рекурсию на \(n \in \N\) нам нужна база \(n = 0\) и индуктивный переход \(n = S(m)\). Для этого мы определяем пять переменных \(t_0, x, y, t_s\) и \(n\). Значение \(t_0\) и \(n\) понятно --- это начало и конец рекурсии. Переменные \(x, y\) суть предыдущий номер вызова, предыдущие значение. Переменная \(t_s\) и есть «следующий элемент» в индукции.
 
 \begin{eg}
 
@@ -215,12 +230,12 @@
 Давайте посмотрим внимательно на аксиому проекции
 \begin{prooftree}
     \AxiomC{\(\Gamma \vdash t : A_1 \times A_2\)}
-    \UnaryInfC{\(\Gamma \vdash p_i(t) : A_i\)}
+    \UnaryInfC{\(\Gamma \vdash \pi_i(t) : A_i\)}
 \end{prooftree}
-Из этой аксиомы нельзя точно понять, на каком типе определена функция \(p_i\), но мы видим этот тип из контекста. В теории типов существует аннотирование, которое приписывает на каком типе определена функция. С ней наша аксиома должна выглядеть как 
+Из этой аксиомы нельзя точно понять, на каком типе определена функция \(\pi_i\), но мы видим этот тип из контекста. В теории типов существует аннотирование, которое приписывает на каком типе определена функция. С ней наша аксиома должна выглядеть как 
 \begin{prooftree}
     \AxiomC{\(\Gamma \vdash t : A_1 \times A_2\)}
-    \UnaryInfC{\(\Gamma \vdash p^{A_1, \, A_2}_i(t) : A_i\)}
+    \UnaryInfC{\(\Gamma \vdash \pi^{A_1, \, A_2}_i(t) : A_i\)}
 \end{prooftree}
 Аннотация присутствует всегда, но для читаемости ее не выписывают. Нам также необходимо аннотировать аксиомы пары, поскольку функция пары для каждого типа своя:
 \begin{prooftree}
@@ -232,8 +247,12 @@
     \AxiomC{\(\Gamma \vdash n : \nat\)}
     \AxiomC{\(\Gamma \vdash t_0 : C\)}
     \AxiomC{\(\Gamma, x : \nat, y : C \vdash t_s (x, y) : C\)}
-    \TrinaryInfC{\(\Gamma \vdash \rec^C(t_0; (x, y, t_s); n) : C\)}
+    \TrinaryInfC{\(\Gamma \vdash \rec^C(t_0; (x, y \,.\, t_s); n) : C\)}
 \end{prooftree} 
+
+\begin{note}
+    Аннотировать можно как и сверху \(\rec^C\), так и снизу \(\rec_C\). Для стройности изложения мы предпочтём аннотацию сверху.
+\end{note}
 
 \subsubsection{Упрощение выражений}
 
@@ -241,20 +260,20 @@
 
 \begin{prooftree}
     \AxiomC{\(\Gamma \vdash t_1 : A_1, \Gamma \vdash t_2 : A_2\)}
-    \UnaryInfC{\(\Gamma \vdash p_i \langle t_1,\, t_2 \rangle \rightsquigarrow t_i : A_i\)}
+    \UnaryInfC{\(\Gamma \vdash \pi_i \langle t_1,\, t_2 \rangle \rightsquigarrow t_i : A_i\)}
 \end{prooftree}
 
 \begin{prooftree}
     \AxiomC{\(\Gamma \vdash t_0 : C\)}
     \AxiomC{\(\Gamma, x : \nat, y : C \vdash t_s (x, y) : C\)}
-    \BinaryInfC{\(\Gamma \vdash \rec^C(t_0; (x, y, t_s); 0) : C \rightsquigarrow t_0 : C\)}
+    \BinaryInfC{\(\Gamma \vdash \rec^C(t_0; (x, y \,.\, t_s); 0) : C \rightsquigarrow t_0 : C\)}
 \end{prooftree} 
 
 \begin{prooftree}
     \AxiomC{\(\Gamma \vdash m : \nat\)}
     \AxiomC{\(\Gamma \vdash t_0 : C\)}
     \AxiomC{\(\Gamma, x : \nat, y : C \vdash t_s (x, y) : C\)}
-    \TrinaryInfC{\(\Gamma \vdash \rec^C(t_0; (x, y, t_s); S(m)) \rightsquigarrow t_s [m/x, \rec^C(t_0; (x, y, t_s); m)/y] : C\)}
+    \TrinaryInfC{\(\Gamma \vdash \rec^C(t_0; (x, y\,.\, t_s); S(m)) \rightsquigarrow t_s [m/x, \rec^C(t_0; (x, y\,.\, t_s); m)/y] : C\)}
 \end{prooftree} 
 
 Проведем теперь испытание наших определений и ``запрограммируем'' что-нибудь. Начнем с функции суммы. Как известно \(x + 0 = x\) и \(x + S y = S(x + y)\). Тогда мы можем в нашей системе типов определить функцию \(\mathrm{add}(x, y)\) как
@@ -263,26 +282,34 @@
     \AxiomC{\(x, y: \nat \vdash y: \nat\)}
     \AxiomC{\(x, y: \nat \vdash x : \nat\)}
     \AxiomC{\(x,y,z,w : \nat \vdash S(w) : \nat\)}
-    \TrinaryInfC{\(x,y:\nat \vdash \rec(x; z, w, S(w); y) : \nat\)}
+    \TrinaryInfC{\(x,y:\nat \vdash \rec(x; z, w\,.\,S(w); y) : \nat\)}
     \UnaryInfC{\(\mathrm{add}(x, y)\)}
 \end{prooftree}
 
 Получается, что для каждого \(\Gamma \vdash x, y : \nat\) мы даем \(\Gamma \vdash \mathrm{add}(x, y) : \nat\).
 
 \begin{eg}
-    \[\mathrm{add}(S0, 0) \equiv \rec(S0; z, w, S(w); 0) \rightsquigarrow S0,\]
+    \[\mathrm{add}(S0, 0) \equiv \rec(S0; z, w\,.\, S(w); 0) \rightsquigarrow S0,\]
     то есть \(1 + 0 = 1\).
 
-    \begin{align*}\mathsf{add}(SS0, SS0) \equiv \rec(SS0; z, w, S(w); SS0) \rightsquigarrow Sw [\rec(SS0; z, w, S(w); S0)/w] \equiv \\ \equiv S(\rec(SS0; z, w, S(w); S0)) \rightsquigarrow S(Sw[\rec(SS0; z, w, S(w); 0)]/w) \equiv \\ \equiv SS(\rec(SS0; z, w, S(w); 0)) \rightsquigarrow SSSS(0),\end{align*}
+    \begin{align*}\mathsf{add}(SS0, SS0) \equiv \rec(SS0; z, w\,.\, S(w); SS0) \rightsquigarrow Sw [\rec(SS0; z, w\,.\, S(w); S0)/w] \equiv \\ \equiv S(\rec(SS0; z, w\,.\, S(w); S0)) \rightsquigarrow S(Sw[\rec(SS0; z, w, S(w); 0)]/w) \equiv \\ \equiv SS(\rec(SS0; z, w\,.\, S(w); 0)) \rightsquigarrow SSSS(0),\end{align*}
     действительно \(2 + 2 = 4\).
 \end{eg}
 
-\begin{eg}
-    Для умножения мы будем использовать уже введенную функцию \(\mathrm{add}(x, y)\). Как мы помним, \(m \cdot 0 := 0\), \(m \cdot S(n) := m \cdot n + m\). Тогда мы можем определить умножение как \(\mathsf{mult}(x, y) := \mathrm{rec}^{\nat} (0; (z, w, \mathsf{add}(w, x)); y)\), если \(x, y : \nat\).
-\end{eg}
 
+Для умножения мы будем использовать уже введенную функцию \(\mathrm{add}(x, y)\). Как мы помним, \(m \cdot 0 := 0\), \(m \cdot S(n) := m \cdot n + m\). Тогда мы можем определить умножение как \(\mathsf{mult}(x, y) := \mathrm{rec}^{\nat} (0; (z, w, \mathsf{add}(w, x)); y)\), если \(x, y : \nat\).
 \begin{eg}
-    Более интересно посмотреть на пример с числами Фибоначчи. Для этого мы определим пары \(p_n := \langle G_n, H_n \rangle\), где \(p_0 = \langle G_0, H_0 \rangle = \langle 0, 1 \rangle\) и \(p_{n+1} = \langle G_{n+1}, H_{n+1} \rangle = \langle H_n, G_n + H_n \rangle\). Тогда мы можем вычислить \(p_n\) следующим образом \[n : \nat \vdash \rec^{\nat \times \nat} (\langle 0, 1 \rangle; (z, w, \langle \pi_2 w, \mathsf{add}(\pi_1 w, \pi_2 w)\rangle); n).\]
+    Как мы знаем, \(2 \times 2 = 4\), проверим
+    \begin{align*}\mathsf{mult}(S(S(0)), S(S(0))) \equiv \mathrm{rec}^{\nat} (0; (z, w\,.\, \mathsf{add}(w, S(S(0)))); S(S(0))) \rightsquigarrow\\ \rightsquigarrow \mathsf{add}(w, S(S(0)))[\mathrm{rec}^{\nat} (0; (z, w\,.\, \mathsf{add}(w, S(S(0)))); S(0))/w]\rightsquigarrow\\ \rightsquigarrow \mathsf{add}(\mathrm{rec}^{\nat} (0; (z, w\,.\, \mathsf{add}(w, S(S(0)))); S(0)), S(S(0)))\rightsquigarrow \\ \rightsquigarrow  \mathsf{add}(\mathsf{add}(w, S(S(0)))[\mathrm{rec}^{\nat} (0; (z, w\,.\, \mathsf{add}(w, S(S(0)))); 0)/w], S(S(0)))\rightsquigarrow\\\rightsquigarrow \mathsf{add}(\mathsf{add}(\mathrm{rec}^{\nat} (0; (z, w\,.\, \mathsf{add}(w, S(S(0)))); 0), S(S(0))) \rightsquigarrow\\\rightsquigarrow \mathsf{add}(\mathsf{add}(0, S(S(0))), S(S(0))). \end{align*}
+    И тогда
+    \begin{align*}
+        \mathsf{add}(\mathsf{add}(0, S(S(0))), S(S(0))) \rightsquigarrow\\\rightsquigarrow \mathsf{add}(\rec(0; z, w\,.\, S(w); SS0), S(S(0))) \rightsquigarrow\\\rightsquigarrow \mathsf{add}(Sw[\rec(0; z, w\,.\, S(w); S0)/w], S(S(0))) \rightsquigarrow\\\rightsquigarrow \mathsf{add}(S(\rec(0; z, w\,.\, S(w); S0)), S(S(0))) \rightsquigarrow\\\rightsquigarrow \mathsf{add}(S(Sw[\rec(0; z, w\,.\, S(w); 0)]), S(S(0))) \rightsquigarrow\\\rightsquigarrow \mathsf{add}(S(S(\rec(0; z, w\,.\, S(w); 0))), S(S(0))) \rightsquigarrow\\\rightsquigarrow \mathsf{add}(S(S(0)), S(S(0))) \rightsquigarrow^* S(S(S(S(0)))).
+    \end{align*}
+    В последней стрелке \(\rightsquigarrow^*\) имеется ввиду множественность необходимых шагов вывода, которые мы опускаем, потому что сделали это в предыдущем примере.
+
+\end{eg}
+\begin{eg}
+    Более интересно посмотреть на пример с числами Фибоначчи. Для этого мы определим пары \(p_n := \langle G_n, H_n \rangle\), где \(p_0 = \langle G_0, H_0 \rangle = \langle 0, 1 \rangle\) и \(p_{n+1} = \langle G_{n+1}, H_{n+1} \rangle = \langle H_n, G_n + H_n \rangle\). Тогда мы можем вычислить \(p_n\) следующим образом \[n : \nat \vdash \rec^{\nat \times \nat} (\langle 0, 1 \rangle; (z, w\,.\, \langle \pi_2 w, \mathsf{add}(\pi_1 w, \pi_2 w)\rangle); n).\]
 
     Тогда \(n\)-ое число Фибоначчи \(\mathsf{Fib}(n)\) есть \[n : \nat \vdash \pi_1(p_n) : \nat.\]
 \end{eg}
@@ -479,8 +506,8 @@
 \begin{itemize}
     \item \(\pi_1 \langle t_1, t_2 \rangle \rightsquigarrow t_1\)
     \item \(\pi_2 \langle t_1, t_2 \rangle \rightsquigarrow t_2\)
-    \item \(\rec(d_0; x, y, d_s; 0) \rightsquigarrow d_0\)
-    \item \(\rec(d_0; x, y, d_s; Sn) \rightsquigarrow d_s [n/x, \rec(d_0; x, y, d_s; n)/y]\)
+    \item \(\rec(d_0; x, y\,.\, d_s; 0) \rightsquigarrow d_0\)
+    \item \(\rec(d_0; x, y\,.\, d_s; Sn) \rightsquigarrow d_s [n/x, \rec(d_0; x, y\,.\, d_s; n)/y]\)
 \end{itemize}
 
 Формы \(\pi_1, \pi_2\) и \(\rec\) являются элиминативными формами (elimination forms), поскольку они сводят термы к менее сложным.
