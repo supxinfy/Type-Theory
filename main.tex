@@ -62,6 +62,7 @@
 
 \newcommand{\N}{\mathbb{N}}
 \newcommand{\rec}{\mathrm{rec}}
+\newcommand{\app}{\mathrm{app}}
 \newcommand{\nat}{\mathsf{Nat}}
 
 \date{\today}
@@ -149,10 +150,10 @@
         \AxiomC{\(\Gamma \vdash t : A\)}
         \UnaryInfC{\(\Gamma, x : B \vdash t : A\)}
     \end{prooftree}
-    \itemЗамена (exchange):
+    \itemПерестановка (exchange):
     \begin{prooftree}
-        \AxiomC{\(\Delta \vdash s_i : A_i \quad \Gamma \vdash t : C\)}
-        \UnaryInfC{\(\Gamma, x : A, y : B \quad \Delta \vdash t : C\)}
+        \AxiomC{\(\Gamma x : A, y : B, \Delta \vdash t : C\)}
+        \UnaryInfC{\(\Gamma, y : B, x : A, \Delta \vdash t : C\)}
     \end{prooftree}
     \itemЗамена одной переменной:
     \begin{prooftree}
@@ -590,10 +591,69 @@
 
 Таким образом, мы описали все нормальные (замкнутые) термы в нашей теории типов. Из этого можно получить следующее следствие.
 \begin{cor}
-    Любой замкнутый нормальный терм вида \(\Gamma \vdash a : \nat\) представляется в виде \(\underline{n}\) для некоторого натурального \(n\).
+    Любой замкнутый нормальный терм вида \(\Gamma \vdash a : \nat\) представляется в виде \(\underline{n}\) для некоторого натурального \(n\). В общем случае для любого терма \(\Gamma \vdash t : B\), где \(\Gamma = (x_i : A_i)_i\) если \(\vdash a_i : A\) замкнуты и нормальны, то \(\vdash t[a_i/x_i]:B\) нормализуется.
 \end{cor}
+\begin{proof}
+По индукции на \(\Gamma \vdash t:B\)
+\begin{itemize}
+\item 
+\begin{prooftree}
+    \AxiomC{\(\)}
+    \UnaryInfC{\(\Gamma \vdash x_i : A_i\)}
+\end{prooftree}
+Этот случай тривиален.
+
+\item 
+\begin{prooftree}
+    \AxiomC{\(\Gamma \vdash t_i : A_i\)}
+    \UnaryInfC{\(\Gamma \vdash \langle t_1, t_2 \rangle : A_1 \times A_2\)}
+\end{prooftree}
+
+По гипотезе индукции для каждого \(t_i\) при подстановке замкнутых нормальных термов для всех переменных нормализирует. По индукции имеем \(t_i [a_i/x_i]\) нормализирующий. Тогда
+\[\vdash t_1 [a_i/x_i] \rightsquigarrow^* t'_1:A_1,\]
+\[\vdash t_2 [a_i/x_i] \rightsquigarrow^* t'_2:A_2.\]
+Следовательно
+\[\vdash \langle t_1, t_2 \rangle [a_i/x_i] \rightsquigarrow^* \langle t'_1, t'_2 \rangle : A_1 \times A_2\]
+Все остальное аналогично.
+\item
+\begin{prooftree}
+    \AxiomC{\(\Gamma \vdash p : B_1 \times B_2\)}
+    \UnaryInfC{\(\Gamma \vdash \pi_1 p : B_1\)}
+\end{prooftree}
+Имеем \[(\pi_1 p)[a_i/x_i] := \underset{\text{По индукции нормализуется}}{\pi_1(p[a_i/x_i])}.\]
+Тогда этот терм нормален по каноничности \(p' = \langle q_1, q_2\rangle\), значит \(\pi_1 p \rightsquigarrow^* \pi_1 \langle q_1, q_2 \rangle \rightsquigarrow q_1\) нормален.
+
+\item
+\begin{prooftree}
+    \AxiomC{\(\Gamma \vdash d_0:B, \Gamma, y : \nat, z: B \vdash d_s : B, \Gamma \vdash t : \nat\)}
+    \UnaryInfC{\(\Gamma \vdash \rec(d_0; (y, z . d_s); t) : B\)}
+\end{prooftree}
+Если \(\vdash a_i : A_i\) получаем \[\rec(\_)[a_i/x_i] := \rec(d_0[\_]; y, z . d_s[a_i/x_i], t[a_i/x_i])\]
+Продолжение следует...
+\end{itemize}
+\end{proof}
 
 \section{Функциональный тип}
+
+Наша система имеет довольно слабую выразительную силу. В качестве упражнения, попробуйте записать в ней обыкновенное равенство двух натуральных чисел. На данный же момент наша система не имеет довольно естественной возможности оперировать с функциями. Для этого мы введем тип \(A \to B\).
+\begin{itemize}
+\item \begin{prooftree}
+    \AxiomC{\(\Gamma, x: A \vdash b:B\)}
+    \UnaryInfC{\(\Gamma \vdash (\lambda x : A . b) : A \to B\)}
+\end{prooftree}
+
+\item \begin{prooftree}
+    \AxiomC{\(\Gamma, f: A \to B\)}
+    \AxiomC{\(\Gamma \vdash a : A\)}
+    \BinaryInfC{\(\Gamma \vdash \app^{A, B}(f, a) : B\)}
+\end{prooftree}
+
+\item \begin{prooftree}
+    \AxiomC{\(\Gamma, x: A \vdash b: B\)}
+    \AxiomC{\(\Gamma \vdash a : A\)}
+    \BinaryInfC{\(\Gamma \vdash \app^{A, B}((\lambda x: A . b), a) \rightsquigarrow b[a/x] : B\)}
+\end{prooftree}
+\end{itemize}
 
 \begin{thebibliography}{2}
 
